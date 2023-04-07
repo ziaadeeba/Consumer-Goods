@@ -27,7 +27,8 @@ inner join unique_products_2021
 
 
 
- 3. Provide a report with all the unique product counts for each segment and sort them in descending order of product counts. The final output contains 2 fields, segment product_count.
+--3. Provide a report with all the unique product counts for each segment and sort them in descending order of product counts. The final output contains 2 fields, segment product_count.
+
 select count(distinct product_code) as product_count,segment
 from dim_product
 group by segment
@@ -39,7 +40,7 @@ order by count(distinct product_code) desc
 
 
 
- 4. Follow-up: Which segment had the most increase in unique products in 2021 vs 2020? The final output contains these fields, segment product_count_2020 product_count_2021 difference.
+--4. Follow-up: Which segment had the most increase in unique products in 2021 vs 2020? The final output contains these fields, segment product_count_2020 product_count_2021 difference.
 
 
 with cte1 as (
@@ -65,6 +66,22 @@ order by difference desc
 
 
 
+--5. Get the products that have the highest and lowest manufacturing costs. The final output should contain these fields, product_code product manufacturing_cost.
 
+with cte as (
+select y.product_code as product_code,product,
+rank() over (order by manufacturing_cost desc) highestt,
+rank() over (order by manufacturing_cost asc) lowestt,
+manufacturing_cost
+from fact_manufacturing_cost x
+join dim_product y
+on x.product_code=y.product_code)
 
+select product_code,product,manufacturing_cost
+from cte where
+highestt=1 or lowestt=1
+
+      
+
+--6. Generate a report which contains the top 5 customers who received an average high pre_invoice_discount_pct for the fiscal year 2021 and in the Indian market. The final output contains these fields, customer_code customer average_discount_percentage.
 
